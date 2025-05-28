@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Users, BarChart3, MessageSquare, AlertTriangle } from 'lucide-react';
+import { Users, BarChart3, MessageSquare, AlertTriangle, FileText } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const stats = [
