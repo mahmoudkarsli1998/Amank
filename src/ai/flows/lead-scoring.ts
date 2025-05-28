@@ -22,6 +22,7 @@ const ScoreLeadInputSchema = z.object({
   carCategory: z.string().describe('The general category of the car (e.g., Sedan, SUV).'),
   carMake: z.string().describe('The make of the car (e.g., Toyota, BMW).'),
   carModel: z.string().describe('The model of the car (e.g., Corolla, X5).'),
+  message: z.string().optional().describe('Any additional message or notes from the customer.'),
 });
 export type ScoreLeadInput = z.infer<typeof ScoreLeadInputSchema>;
 
@@ -53,6 +54,7 @@ Consider the following factors:
 - Interaction with the insurance calculator: Customers who interacted with the calculator are more likely to be interested.
 - Number of website visits: Customers who visited the website multiple times are more likely to be interested.
 - Demographic data (age, region, car details): Certain demographics may be more likely to purchase car insurance. Newer or more expensive car makes/models might indicate higher likelihood.
+- Customer Message: Any message from the customer might provide additional context about their needs or urgency.
 
 Provide a brief explanation for the assigned lead score.
 
@@ -62,7 +64,8 @@ Age: {{{age}}}
 Region: {{{region}}}
 Car Category: {{{carCategory}}}
 Car Make: {{{carMake}}}
-Car Model: {{{carModel}}}`,
+Car Model: {{{carModel}}}
+{{#if message}}Customer Message: {{{message}}}{{/if}}`,
 });
 
 const scoreLeadFlow = ai.defineFlow(
@@ -81,5 +84,3 @@ const scoreLeadFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

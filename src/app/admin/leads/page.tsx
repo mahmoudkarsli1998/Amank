@@ -8,7 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import type { ScoredLead } from '@/types';
 import { format } from 'date-fns';
-import { arSA } from 'date-fns/locale'; 
+import { arSA } from 'date-fns/locale';
+import { Loader2 } from 'lucide-react';
 
 export default function AdminLeadsPage() {
   const [scoredLeads, setScoredLeads] = useState<ScoredLead[]>([]);
@@ -36,11 +37,11 @@ export default function AdminLeadsPage() {
   };
 
   const getLeadScoreBadgeVariant = (score: number): "default" | "secondary" | "destructive" | "outline" => {
-    if (score >= 0.8) return "default"; 
-    if (score >= 0.5) return "secondary"; 
-    return "outline"; 
+    if (score >= 0.8) return "default";
+    if (score >= 0.5) return "secondary";
+    return "outline";
   };
-  
+
   if (!clientOnly) {
       return (
         <div className="flex justify-center items-center h-screen">
@@ -96,6 +97,7 @@ export default function AdminLeadsPage() {
                     <TableHead>طراز السيارة</TableHead>
                     <TableHead>درجة الاهتمام</TableHead>
                     <TableHead>سبب التقييم</TableHead>
+                    <TableHead>الرسالة</TableHead>
                     <TableHead>تاريخ الإرسال</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -105,7 +107,7 @@ export default function AdminLeadsPage() {
                       <TableCell className="font-medium">{lead.name}</TableCell>
                       <TableCell>{lead.phone}</TableCell>
                       <TableCell>{lead.email}</TableCell>
-                      <TableCell>{lead.carCategory}</TableCell> {/* Was lead.carType, now mapped from ScoreLeadInput.carCategory */}
+                      <TableCell>{lead.carCategory}</TableCell>
                       <TableCell>{lead.carMake}</TableCell>
                       <TableCell>{lead.carModel}</TableCell>
                       <TableCell>
@@ -114,6 +116,7 @@ export default function AdminLeadsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="max-w-xs truncate" title={lead.reason}>{lead.reason}</TableCell>
+                      <TableCell className="max-w-[200px] truncate" title={lead.message}>{lead.message || '-'}</TableCell>
                       <TableCell>
                         {format(new Date(lead.submissionDate), "PPpp", { locale: arSA })}
                       </TableCell>
@@ -128,5 +131,3 @@ export default function AdminLeadsPage() {
     </div>
   );
 }
-
-    

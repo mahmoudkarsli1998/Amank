@@ -1,4 +1,6 @@
+
 import type { ScoreLeadInput, ScoreLeadOutput } from "@/ai/flows/lead-scoring";
+import type { LucideIcon } from "lucide-react";
 
 export interface LeadData extends ScoreLeadInput {
   id: string;
@@ -6,6 +8,7 @@ export interface LeadData extends ScoreLeadInput {
   phone: string;
   email: string;
   submissionDate: string;
+  message?: string; // Added optional message field
 }
 
 export interface ScoredLead extends LeadData, ScoreLeadOutput {}
@@ -22,5 +25,5 @@ export type WhyChooseUsItem = {
   id: string;
   title: string;
   description: string;
-  icon: React.ElementType;
+  icon: LucideIcon; // Changed from React.ElementType to LucideIcon for specificity
 };

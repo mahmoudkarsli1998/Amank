@@ -9,33 +9,35 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { scoreLead, type ScoreLeadInput } from '@/ai/flows/lead-scoring';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Calculator, MessageSquareText } from 'lucide-react';
 import { CAR_MAKES, CAR_MODELS_DATA } from '@/data/carData';
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 const regions = ["القاهرة", "الجيزة", "الإسكندرية", "الدقهلية", "الشرقية", "الغربية", "البحيرة", "أسيوط", "سوهاج", "أخرى"];
-const carCategories = ["سيدان", "دفع رباعي (SUV)", "هاتشباك", "بيك أب", "ميني فان", "أخرى"]; // Renamed for clarity, was carTypes
+const carCategories = ["سيدان", "دفع رباعي (SUV)", "هاتشباك", "بيك أب", "ميني فان", "أخرى"];
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "الاسم مطلوب ويجب أن يكون حرفين على الأقل." }),
   phone: z.string().regex(/^01[0-2,5]{1}[0-9]{8}$/, { message: "رقم الهاتف المصري غير صالح." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  carType: z.string({ required_error: "فئة السيارة مطلوبة." }), // This is car category (Sedan, SUV)
+  carType: z.string({ required_error: "فئة السيارة مطلوبة." }),
   carMake: z.string({ required_error: "ماركة السيارة مطلوبة." }),
   carModel: z.string({ required_error: "طراز السيارة مطلوب." }),
   yearOfManufacture: z.coerce.number().min(currentYear - 50).max(currentYear, { message: "سنة الصنع غير صالحة." }),
   driverAge: z.coerce.number().min(18, { message: "يجب أن يكون عمر السائق 18 عامًا على الأقل." }).max(80, { message: "عمر السائق لا يمكن أن يتجاوز 80 عامًا." }),
   region: z.string({ required_error: "المنطقة الجغرافية مطلوبة." }),
+  message: z.string().max(500, "الرسالة طويلة جدًا (الحد الأقصى 500 حرف).").optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 interface InsuranceCalculatorFormProps {
-  onLeadScored?: (lead: any) => void; 
+  onLeadScored?: (lead: any) => void;
 }
 
 export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalculatorFormProps) {
@@ -43,7 +45,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const [availableModels, setAvailableModels] = useState<string[]>([]);
-  
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,6 +58,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
       driverAge: 25,
       yearOfManufacture: currentYear,
       region: '',
+      message: '',
     },
   });
 
@@ -64,7 +67,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
   useEffect(() => {
     if (selectedCarMake) {
       setAvailableModels(CAR_MODELS_DATA[selectedCarMake]?.models || []);
-      form.setValue('carModel', ''); // Reset car model when make changes
+      form.setValue('carModel', '');
     } else {
       setAvailableModels([]);
     }
@@ -78,12 +81,10 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
 
   const handleCalculatePremium = () => {
     const values = form.getValues();
-    // Premium calculation uses carType (category), year, age, region as per original logic
     if (values.carType && values.yearOfManufacture && values.driverAge && values.region) {
       const basePremium = 5000;
       const ageFactor = values.driverAge < 25 ? 1.2 : (values.driverAge > 60 ? 1.1 : 1.0);
       const yearFactor = (currentYear - values.yearOfManufacture) * 0.02 + 1;
-      // Note: carType (category like Sedan/SUV) could be used for a more nuanced premium factor here if desired
       const premium = basePremium * ageFactor * yearFactor;
       setCalculatedPremium(`حوالي ${premium.toFixed(0)} جنيه مصري`);
     } else {
@@ -97,36 +98,37 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
-    setCalculatedPremium(null); 
-    
+    setCalculatedPremium(null);
+
     const leadInput: ScoreLeadInput = {
-      calculatorInteraction: true, 
-      websiteVisits: 1, 
+      calculatorInteraction: true,
+      websiteVisits: 1,
       age: data.driverAge,
       region: data.region,
-      carCategory: data.carType, // Mapped from form's carType
+      carCategory: data.carType,
       carMake: data.carMake,
       carModel: data.carModel,
+      message: data.message || undefined, // Pass message if it exists
     };
 
     try {
       const result = await scoreLead(leadInput);
       const fullLeadData = {
-        id: Date.now().toString(), 
-        ...data, // Includes name, phone, email, carType, carMake, carModel, yearOfManufacture, driverAge, region
-        // AI input fields are already in leadInput and data
+        id: Date.now().toString(),
+        ...data, 
         leadScore: result.leadScore,
         reason: result.reason,
         submissionDate: new Date().toISOString(),
+        message: data.message || '', // Ensure message is part of fullLeadData
       };
-      
-      if (onLeadScored) { 
+
+      if (onLeadScored) {
         onLeadScored(fullLeadData);
          toast({
           title: "تمت إضافة العميل المحتمل بنجاح!",
           description: `الاسم: ${data.name}, درجة الاهتمام: ${result.leadScore.toFixed(2)}`,
         });
-      } else { 
+      } else {
          toast({
           title: "تم استلام طلبك بنجاح!",
           description: `شكراً لك ${data.name}. درجة اهتمامك الأولية هي ${result.leadScore.toFixed(2)}. سنتواصل معك قريباً. سبب التقييم: ${result.reason}`,
@@ -145,7 +147,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
       setIsLoading(false);
     }
   }
-  
+
   if (!clientRendered) {
     return (
       <Card className="w-full max-w-2xl mx-auto shadow-xl">
@@ -205,7 +207,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
               />
               {form.formState.errors.yearOfManufacture && <p className="text-sm text-destructive">{form.formState.errors.yearOfManufacture.message}</p>}
             </div>
-            
+
             {/* Car Make */}
             <div className="space-y-2">
               <Label htmlFor="carMake">ماركة السيارة</Label>
@@ -231,9 +233,9 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
                 name="carModel"
                 control={form.control}
                 render={({ field }) => (
-                  <Select 
-                    onValueChange={field.onChange} 
-                    defaultValue={field.value} 
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
                     value={field.value ?? undefined}
                     disabled={!selectedCarMake || availableModels.length === 0}
                   >
@@ -274,6 +276,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
           </div>
 
           <Button type="button" variant="outline" onClick={handleCalculatePremium} className="w-full" disabled={isLoading}>
+            <Calculator className="mr-2 h-4 w-4" />
             احسب القسط المبدئي
           </Button>
 
@@ -285,7 +288,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
 
           <hr className="my-6" />
           <p className="text-center font-semibold text-foreground/80">أدخل بياناتك لإرسال الطلب والحصول على تقييم:</p>
-          
+
           <div className="space-y-2">
             <Label htmlFor="name">الاسم بالكامل</Label>
             <Input id="name" {...form.register("name")} placeholder="مثال: محمد أحمد" />
@@ -303,10 +306,22 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
             <Input id="email" type="email" {...form.register("email")} placeholder="مثال: example@mail.com" />
             {form.formState.errors.email && <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>}
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="message">رسالة إضافية (اختياري)</Label>
+            <Textarea
+              id="message"
+              {...form.register("message")}
+              placeholder="هل لديك أي ملاحظات أو استفسارات إضافية؟"
+              rows={3}
+            />
+            {form.formState.errors.message && <p className="text-sm text-destructive">{form.formState.errors.message.message}</p>}
+          </div>
+
         </CardContent>
         <CardFooter>
           <Button type="submit" className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground" disabled={isLoading}>
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquareText className="mr-2 h-4 w-4" />}
             {isLoading ? 'جاري الإرسال...' : 'إرسال الطلب والحصول على تقييم'}
           </Button>
         </CardFooter>
@@ -314,5 +329,3 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
     </Card>
   );
 }
-
-    

@@ -15,24 +15,20 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { geographicRegions } from '@/lib/constants';
-import { UserPlus, Send, Check, ChevronsUpDown } from 'lucide-react';
-import { db } from '@/lib/firebase'; // Assuming this is your client-side firebase setup
+import { UserPlus, Send, Check, ChevronsUpDown, Car, CalendarDays, MapPin, Mail, Phone, User } from 'lucide-react';
+import { db } from '@/lib/firebase'; 
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import carBrandsData from '@/data/car_brands_list.json';
 
 const currentYear = new Date().getFullYear();
 
-// Function to extract car brands from JSON data
-// This handles different possible JSON structures
 const getCarBrands = (): string[] => {
   try {
     if (Array.isArray(carBrandsData)) {
-      // If it's an array of strings
       if (typeof carBrandsData[0] === 'string') {
         return carBrandsData as string[];
       }
-      // If it's an array of objects with name/brand property
       if (typeof carBrandsData[0] === 'object' && carBrandsData[0] !== null) {
         const brands = (carBrandsData as any[]).map((item: any) => 
           item.name || item.brand || item.make || item.manufacturer || Object.values(item)[0]
@@ -40,7 +36,6 @@ const getCarBrands = (): string[] => {
         return brands;
       }
     }
-    // If it's an object with brands as values
     if (typeof carBrandsData === 'object' && !Array.isArray(carBrandsData) && carBrandsData !== null) {
       const values = Object.values(carBrandsData as Record<string, any>);
       const flatValues = values.flat();
@@ -72,7 +67,7 @@ export type LeadFormValues = z.infer<typeof leadSchema>;
 
 export default function LeadCaptureForm() {
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [openVehiclePopover, setOpenVehiclePopover] = useState(false);
   const [carBrands, setCarBrands] = useState<string[]>([]);
   
   useEffect(() => {
@@ -98,7 +93,6 @@ export default function LeadCaptureForm() {
   const processSubmit: SubmitHandler<LeadFormValues> = async (data) => {
     form.clearErrors();
     try {
-      // 1. حفظ البيانات في Firestore
       const docRef = await addDoc(collection(db, "leads"), {
         ...data,
         submittedAt: serverTimestamp(),
@@ -112,7 +106,6 @@ export default function LeadCaptureForm() {
       });
       form.reset();
 
-      // 2. إرسال البيانات إلى n8n Webhook (إذا كان الرابط معرفًا)
       if (n8nWebhookUrl && n8nWebhookUrl !== "YOUR_N8N_WEBHOOK_URL_HERE") {
         try {
           const response = await fetch(n8nWebhookUrl, {
@@ -130,7 +123,7 @@ export default function LeadCaptureForm() {
             toast({
               title: 'تنبيه بخصوص الأتمتة',
               description: 'تم حفظ طلبك، ولكن حدث خطأ بسيط في إرسال البيانات لنظام الأتمتة. لا تقلق، فريقنا سيتابع طلبك.',
-              variant: 'default',
+              variant: 'default', // Kept as default as it's not a critical error for the user
             });
           }
         } catch (n8nError) {
@@ -138,7 +131,7 @@ export default function LeadCaptureForm() {
            toast({
               title: 'تنبيه بخصوص الأتمتة',
               description: 'تم حفظ طلبك، ولكن تعذر الاتصال بنظام الأتمتة حاليًا. فريقنا سيتابع طلبك.',
-              variant: 'default',
+              variant: 'default', // Kept as default
             });
         }
       } else if (n8nWebhookUrl === "YOUR_N8N_WEBHOOK_URL_HERE") {
@@ -172,7 +165,7 @@ export default function LeadCaptureForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>الاسم بالكامل</FormLabel>
+                  <FormLabel className="flex items-center gap-2"><User className="h-4 w-4 text-primary/80" />الاسم بالكامل</FormLabel>
                   <FormControl>
                     <Input placeholder="على سبيل المثال: محمد أحمد" {...field} />
                   </FormControl>
@@ -185,7 +178,7 @@ export default function LeadCaptureForm() {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>رقم الهاتف</FormLabel>
+                  <FormLabel className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary/80" />رقم الهاتف</FormLabel>
                   <FormControl>
                     <Input type="tel" placeholder="مثال: 01012345678" {...field} />
                   </FormControl>
@@ -198,7 +191,7 @@ export default function LeadCaptureForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>عنوان البريد الإلكتروني</FormLabel>
+                  <FormLabel className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary/80" />عنوان البريد الإلكتروني</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="مثال: example@mail.com" {...field} />
                   </FormControl>
@@ -211,14 +204,14 @@ export default function LeadCaptureForm() {
               name="vehicleType"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>نوع السيارة</FormLabel>
-                  <Popover open={open} onOpenChange={setOpen}>
+                  <FormLabel className="flex items-center gap-2"><Car className="h-4 w-4 text-primary/80" />نوع السيارة</FormLabel>
+                  <Popover open={openVehiclePopover} onOpenChange={setOpenVehiclePopover}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant="outline"
                           role="combobox"
-                          aria-expanded={open}
+                          aria-expanded={openVehiclePopover}
                           className={cn(
                             "w-full justify-between",
                             !field.value && "text-muted-foreground"
@@ -233,9 +226,9 @@ export default function LeadCaptureForm() {
                     </PopoverTrigger>
                     <PopoverContent className="w-full p-0" align="start">
                       <Command>
-                        <CommandInput 
-                          placeholder="ابحث عن نوع السيارة..." 
-                          className="h-9" 
+                        <CommandInput
+                          placeholder="ابحث عن نوع السيارة..."
+                          className="h-9"
                         />
                         <CommandList>
                           <CommandEmpty>لم يتم العثور على نوع السيارة.</CommandEmpty>
@@ -245,8 +238,8 @@ export default function LeadCaptureForm() {
                                 key={brand}
                                 value={brand}
                                 onSelect={(currentValue: string) => {
-                                  field.onChange(currentValue === field.value ? "" : brand);
-                                  setOpen(false);
+                                  form.setValue("vehicleType", currentValue === field.value ? "" : brand);
+                                  setOpenVehiclePopover(false);
                                 }}
                               >
                                 <Check
@@ -272,7 +265,7 @@ export default function LeadCaptureForm() {
               name="yearOfManufacture"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>سنة صنع السيارة</FormLabel>
+                  <FormLabel className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-primary/80" />سنة صنع السيارة</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="مثال: 2022" {...field} />
                   </FormControl>
@@ -285,7 +278,7 @@ export default function LeadCaptureForm() {
               name="region"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>المنطقة/المحافظة</FormLabel>
+                  <FormLabel className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary/80" />المنطقة/المحافظة</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -309,7 +302,7 @@ export default function LeadCaptureForm() {
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>رسالة إضافية (اختياري)</FormLabel>
+                  <FormLabel className="flex items-center gap-2"><MessageSquareText className="h-4 w-4 text-primary/80" />رسالة إضافية (اختياري)</FormLabel>
                   <FormControl>
                     <Textarea placeholder="هل لديك أي استفسارات أو طلبات معينة؟" {...field} rows={3} />
                   </FormControl>
