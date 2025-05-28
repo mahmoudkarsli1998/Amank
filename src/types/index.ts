@@ -8,7 +8,7 @@ export interface LeadData extends ScoreLeadInput {
   phone: string;
   email: string;
   submissionDate: string;
-  message?: string; // Added optional message field
+  message?: string;
 }
 
 export interface ScoredLead extends LeadData, ScoreLeadOutput {}
@@ -25,5 +25,22 @@ export type WhyChooseUsItem = {
   id: string;
   title: string;
   description: string;
-  icon: LucideIcon; // Changed from React.ElementType to LucideIcon for specificity
+  iconName: string; // Changed from LucideIcon to string for Firestore compatibility
+};
+
+// Data structure for Firestore content
+export interface HeroContent {
+  title: string;
+  subtitle: string;
+}
+
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+// Keep original LucideIcon type for components that use it directly
+export type WhyChooseUsItemWithIcon = Omit<WhyChooseUsItem, 'iconName'> & {
+  icon: LucideIcon;
 };
