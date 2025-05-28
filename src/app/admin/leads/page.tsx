@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect }from 'react';
@@ -7,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import type { ScoredLead } from '@/types';
 import { format } from 'date-fns';
-import { arSA } from 'date-fns/locale'; // For Arabic date formatting
+import { arSA } from 'date-fns/locale'; 
 
 export default function AdminLeadsPage() {
   const [scoredLeads, setScoredLeads] = useState<ScoredLead[]>([]);
@@ -15,10 +16,11 @@ export default function AdminLeadsPage() {
 
   useEffect(() => {
     setClientOnly(true);
-    // Load leads from localStorage if available (for demo persistence)
-    const storedLeads = localStorage.getItem('scoredLeads');
-    if (storedLeads) {
-      setScoredLeads(JSON.parse(storedLeads));
+    if (typeof window !== 'undefined') {
+      const storedLeads = localStorage.getItem('scoredLeads');
+      if (storedLeads) {
+        setScoredLeads(JSON.parse(storedLeads));
+      }
     }
   }, []);
 
@@ -26,7 +28,6 @@ export default function AdminLeadsPage() {
   const handleNewLeadScored = (lead: ScoredLead) => {
     setScoredLeads(prevLeads => {
       const updatedLeads = [lead, ...prevLeads];
-      // Save to localStorage (for demo persistence)
       if (typeof window !== 'undefined') {
         localStorage.setItem('scoredLeads', JSON.stringify(updatedLeads));
       }
@@ -35,13 +36,20 @@ export default function AdminLeadsPage() {
   };
 
   const getLeadScoreBadgeVariant = (score: number): "default" | "secondary" | "destructive" | "outline" => {
-    if (score >= 0.8) return "default"; // Primary color (blue) for hot
-    if (score >= 0.5) return "secondary"; // Orange for warm
-    return "outline"; // Outline or a muted color for cold
+    if (score >= 0.8) return "default"; 
+    if (score >= 0.5) return "secondary"; 
+    return "outline"; 
   };
   
   if (!clientOnly) {
-      return <div>جارٍ التحميل...</div>;
+      return (
+        <div className="flex justify-center items-center h-screen">
+          <Card className="p-8 shadow-xl">
+            <CardTitle className="text-xl text-center text-primary">جارٍ التحميل...</CardTitle>
+            <Loader2 className="mx-auto mt-4 h-12 w-12 animate-spin text-primary" />
+          </Card>
+        </div>
+      );
   }
 
   return (
@@ -83,7 +91,9 @@ export default function AdminLeadsPage() {
                     <TableHead>الاسم</TableHead>
                     <TableHead>الهاتف</TableHead>
                     <TableHead>البريد الإلكتروني</TableHead>
-                    <TableHead>نوع السيارة</TableHead>
+                    <TableHead>فئة السيارة</TableHead>
+                    <TableHead>ماركة السيارة</TableHead>
+                    <TableHead>طراز السيارة</TableHead>
                     <TableHead>درجة الاهتمام</TableHead>
                     <TableHead>سبب التقييم</TableHead>
                     <TableHead>تاريخ الإرسال</TableHead>
@@ -95,13 +105,15 @@ export default function AdminLeadsPage() {
                       <TableCell className="font-medium">{lead.name}</TableCell>
                       <TableCell>{lead.phone}</TableCell>
                       <TableCell>{lead.email}</TableCell>
-                      <TableCell>{lead.carType}</TableCell>
+                      <TableCell>{lead.carCategory}</TableCell> {/* Was lead.carType, now mapped from ScoreLeadInput.carCategory */}
+                      <TableCell>{lead.carMake}</TableCell>
+                      <TableCell>{lead.carModel}</TableCell>
                       <TableCell>
                         <Badge variant={getLeadScoreBadgeVariant(lead.leadScore)}>
                           {lead.leadScore.toFixed(2)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="max-w-xs truncate">{lead.reason}</TableCell>
+                      <TableCell className="max-w-xs truncate" title={lead.reason}>{lead.reason}</TableCell>
                       <TableCell>
                         {format(new Date(lead.submissionDate), "PPpp", { locale: arSA })}
                       </TableCell>
@@ -116,3 +128,5 @@ export default function AdminLeadsPage() {
     </div>
   );
 }
+
+    

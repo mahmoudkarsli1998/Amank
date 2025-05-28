@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -12,17 +13,20 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { scoreLead, type ScoreLeadInput } from '@/ai/flows/lead-scoring';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { CAR_MAKES, CAR_MODELS_DATA } from '@/data/carData';
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 const regions = ["القاهرة", "الجيزة", "الإسكندرية", "الدقهلية", "الشرقية", "الغربية", "البحيرة", "أسيوط", "سوهاج", "أخرى"];
-const carTypes = ["سيدان", "دفع رباعي (SUV)", "هاتشباك", "بيك أب", "ميني فان", "أخرى"];
+const carCategories = ["سيدان", "دفع رباعي (SUV)", "هاتشباك", "بيك أب", "ميني فان", "أخرى"]; // Renamed for clarity, was carTypes
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "الاسم مطلوب ويجب أن يكون حرفين على الأقل." }),
   phone: z.string().regex(/^01[0-2,5]{1}[0-9]{8}$/, { message: "رقم الهاتف المصري غير صالح." }),
   email: z.string().email({ message: "البريد الإلكتروني غير صالح." }),
-  carType: z.string({ required_error: "نوع السيارة مطلوب." }),
+  carType: z.string({ required_error: "فئة السيارة مطلوبة." }), // This is car category (Sedan, SUV)
+  carMake: z.string({ required_error: "ماركة السيارة مطلوبة." }),
+  carModel: z.string({ required_error: "طراز السيارة مطلوب." }),
   yearOfManufacture: z.coerce.number().min(currentYear - 50).max(currentYear, { message: "سنة الصنع غير صالحة." }),
   driverAge: z.coerce.number().min(18, { message: "يجب أن يكون عمر السائق 18 عامًا على الأقل." }).max(80, { message: "عمر السائق لا يمكن أن يتجاوز 80 عامًا." }),
   region: z.string({ required_error: "المنطقة الجغرافية مطلوبة." }),
@@ -31,13 +35,14 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 interface InsuranceCalculatorFormProps {
-  onLeadScored?: (lead: any) => void; // Callback to pass scored lead to parent (e.g., admin page)
+  onLeadScored?: (lead: any) => void; 
 }
 
 export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalculatorFormProps) {
   const [calculatedPremium, setCalculatedPremium] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [availableModels, setAvailableModels] = useState<string[]>([]);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -45,10 +50,25 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
       name: '',
       phone: '',
       email: '',
+      carType: '',
+      carMake: '',
+      carModel: '',
       driverAge: 25,
       yearOfManufacture: currentYear,
+      region: '',
     },
   });
+
+  const selectedCarMake = form.watch('carMake');
+
+  useEffect(() => {
+    if (selectedCarMake) {
+      setAvailableModels(CAR_MODELS_DATA[selectedCarMake]?.models || []);
+      form.setValue('carModel', ''); // Reset car model when make changes
+    } else {
+      setAvailableModels([]);
+    }
+  }, [selectedCarMake, form]);
 
   const [clientRendered, setClientRendered] = useState(false);
   useEffect(() => {
@@ -58,17 +78,18 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
 
   const handleCalculatePremium = () => {
     const values = form.getValues();
+    // Premium calculation uses carType (category), year, age, region as per original logic
     if (values.carType && values.yearOfManufacture && values.driverAge && values.region) {
-      // Mock premium calculation
       const basePremium = 5000;
       const ageFactor = values.driverAge < 25 ? 1.2 : (values.driverAge > 60 ? 1.1 : 1.0);
       const yearFactor = (currentYear - values.yearOfManufacture) * 0.02 + 1;
+      // Note: carType (category like Sedan/SUV) could be used for a more nuanced premium factor here if desired
       const premium = basePremium * ageFactor * yearFactor;
       setCalculatedPremium(`حوالي ${premium.toFixed(0)} جنيه مصري`);
     } else {
       toast({
         title: "خطأ في الإدخال",
-        description: "يرجى ملء حقول نوع السيارة، سنة الصنع، عمر السائق، والمنطقة لحساب القسط.",
+        description: "يرجى ملء حقول فئة السيارة، سنة الصنع، عمر السائق، والمنطقة لحساب القسط.",
         variant: "destructive",
       });
     }
@@ -76,39 +97,43 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
-    setCalculatedPremium(null); // Clear previous calculation
+    setCalculatedPremium(null); 
     
     const leadInput: ScoreLeadInput = {
-      calculatorInteraction: true, // Assuming interaction since they are using this form
-      websiteVisits: 1, // Simulated value
+      calculatorInteraction: true, 
+      websiteVisits: 1, 
       age: data.driverAge,
       region: data.region,
-      carType: data.carType,
+      carCategory: data.carType, // Mapped from form's carType
+      carMake: data.carMake,
+      carModel: data.carModel,
     };
 
     try {
       const result = await scoreLead(leadInput);
       const fullLeadData = {
-        id: Date.now().toString(), // Simple ID for demo
-        ...data,
-        ...leadInput,
-        ...result,
+        id: Date.now().toString(), 
+        ...data, // Includes name, phone, email, carType, carMake, carModel, yearOfManufacture, driverAge, region
+        // AI input fields are already in leadInput and data
+        leadScore: result.leadScore,
+        reason: result.reason,
         submissionDate: new Date().toISOString(),
       };
       
-      if (onLeadScored) { // If callback is provided (used in admin panel)
+      if (onLeadScored) { 
         onLeadScored(fullLeadData);
          toast({
           title: "تمت إضافة العميل المحتمل بنجاح!",
           description: `الاسم: ${data.name}, درجة الاهتمام: ${result.leadScore.toFixed(2)}`,
         });
-      } else { // Default behavior for public page
+      } else { 
          toast({
           title: "تم استلام طلبك بنجاح!",
           description: `شكراً لك ${data.name}. درجة اهتمامك الأولية هي ${result.leadScore.toFixed(2)}. سنتواصل معك قريباً. سبب التقييم: ${result.reason}`,
         });
       }
       form.reset();
+      setAvailableModels([]);
     } catch (error) {
       console.error("Error scoring lead:", error);
       toast({
@@ -134,7 +159,6 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
     );
   }
 
-
   return (
     <Card id="calculator" className="w-full max-w-2xl mx-auto shadow-xl">
       <CardHeader>
@@ -146,17 +170,17 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CardContent className="space-y-6 p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Car Details */}
+            {/* Car Category (Sedan, SUV) */}
             <div className="space-y-2">
-              <Label htmlFor="carType">نوع السيارة</Label>
+              <Label htmlFor="carType">فئة السيارة</Label>
               <Controller
                 name="carType"
                 control={form.control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <SelectTrigger id="carType"><SelectValue placeholder="اختر نوع السيارة" /></SelectTrigger>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value ?? undefined}>
+                    <SelectTrigger id="carType"><SelectValue placeholder="اختر فئة السيارة" /></SelectTrigger>
                     <SelectContent>
-                      {carTypes.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
+                      {carCategories.map(type => <SelectItem key={type} value={type}>{type}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 )}
@@ -164,13 +188,14 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
               {form.formState.errors.carType && <p className="text-sm text-destructive">{form.formState.errors.carType.message}</p>}
             </div>
 
+            {/* Year of Manufacture */}
             <div className="space-y-2">
               <Label htmlFor="yearOfManufacture">سنة الصنع</Label>
                <Controller
                 name="yearOfManufacture"
                 control={form.control}
                 render={({ field }) => (
-                  <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)}>
+                  <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={String(field.value)} value={String(field.value ?? currentYear)}>
                     <SelectTrigger id="yearOfManufacture"><SelectValue placeholder="اختر سنة الصنع" /></SelectTrigger>
                     <SelectContent>
                       {years.map(year => <SelectItem key={year} value={String(year)}>{year}</SelectItem>)}
@@ -180,20 +205,63 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
               />
               {form.formState.errors.yearOfManufacture && <p className="text-sm text-destructive">{form.formState.errors.yearOfManufacture.message}</p>}
             </div>
+            
+            {/* Car Make */}
+            <div className="space-y-2">
+              <Label htmlFor="carMake">ماركة السيارة</Label>
+              <Controller
+                name="carMake"
+                control={form.control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value ?? undefined}>
+                    <SelectTrigger id="carMake"><SelectValue placeholder="اختر ماركة السيارة" /></SelectTrigger>
+                    <SelectContent>
+                      {CAR_MAKES.map(make => <SelectItem key={make.value} value={make.value}>{make.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {form.formState.errors.carMake && <p className="text-sm text-destructive">{form.formState.errors.carMake.message}</p>}
+            </div>
 
+            {/* Car Model */}
+            <div className="space-y-2">
+              <Label htmlFor="carModel">طراز السيارة</Label>
+              <Controller
+                name="carModel"
+                control={form.control}
+                render={({ field }) => (
+                  <Select 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value} 
+                    value={field.value ?? undefined}
+                    disabled={!selectedCarMake || availableModels.length === 0}
+                  >
+                    <SelectTrigger id="carModel"><SelectValue placeholder="اختر طراز السيارة" /></SelectTrigger>
+                    <SelectContent>
+                      {availableModels.map(model => <SelectItem key={model} value={model}>{model}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {form.formState.errors.carModel && <p className="text-sm text-destructive">{form.formState.errors.carModel.message}</p>}
+            </div>
+
+            {/* Driver Age */}
             <div className="space-y-2">
               <Label htmlFor="driverAge">عمر السائق</Label>
               <Input id="driverAge" type="number" {...form.register("driverAge")} placeholder="مثال: 30" />
               {form.formState.errors.driverAge && <p className="text-sm text-destructive">{form.formState.errors.driverAge.message}</p>}
             </div>
 
+            {/* Region */}
             <div className="space-y-2">
               <Label htmlFor="region">المنطقة الجغرافية</Label>
               <Controller
                 name="region"
                 control={form.control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value ?? undefined}>
                     <SelectTrigger id="region"><SelectValue placeholder="اختر المنطقة" /></SelectTrigger>
                     <SelectContent>
                       {regions.map(region => <SelectItem key={region} value={region}>{region}</SelectItem>)}
@@ -218,7 +286,6 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
           <hr className="my-6" />
           <p className="text-center font-semibold text-foreground/80">أدخل بياناتك لإرسال الطلب والحصول على تقييم:</p>
           
-          {/* Personal Details */}
           <div className="space-y-2">
             <Label htmlFor="name">الاسم بالكامل</Label>
             <Input id="name" {...form.register("name")} placeholder="مثال: محمد أحمد" />
@@ -247,3 +314,5 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
     </Card>
   );
 }
+
+    
