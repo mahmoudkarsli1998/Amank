@@ -4,16 +4,16 @@ import Link from 'next/link';
 
 export default function HeroSection() {
   return (
-    <section className="py-16 md:py-24 bg-gradient-to-b from-primary/10 to-background">
+    <section className="py-16 md:py-24 bg-gradient-to-b from-primary/10 to-background overflow-hidden">
       <div className="container grid md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6 text-center md:text-right">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary animate-fade-in-right [animation-delay:0.2s] opacity-0">
             أمانك أونلاين: تأمين سيارتك، راحة بالك
           </h1>
-          <p className="text-lg text-foreground/80">
+          <p className="text-lg text-foreground/80 animate-fade-in-right [animation-delay:0.4s] opacity-0">
             نحن شركة تأمين سيارات ناشئة في مصر، ملتزمون بتوفير أفضل حلول التأمين لحماية سيارتك وتقديم تجربة عملاء استثنائية. اكتشف تغطياتنا الشاملة وأسعارنا التنافسية.
           </p>
-          <div className="flex gap-4 justify-center md:justify-start">
+          <div className="flex gap-4 justify-center md:justify-start animate-fade-in-up [animation-delay:0.6s] opacity-0">
             <Button asChild size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
               <Link href="#calculator">احسب قسط تأمينك</Link>
             </Button>
@@ -22,7 +22,7 @@ export default function HeroSection() {
             </Button>
           </div>
         </div>
-        <div>
+        <div className="animate-zoom-in [animation-delay:0.3s] opacity-0">
           <Image
             src="https://placehold.co/600x400.png"
             alt="تأمين سيارات"
@@ -30,6 +30,7 @@ export default function HeroSection() {
             height={400}
             className="rounded-xl shadow-2xl mx-auto"
             data-ai-hint="car insurance hero"
+            priority
           />
         </div>
       </div>

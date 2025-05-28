@@ -45,7 +45,7 @@ export default function WhyChooseUsSection() {
   return (
     <section className="py-16 md:py-24 bg-muted/30">
       <div className="container">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 animate-fade-in-up opacity-0">
           <h2 className="text-3xl md:text-4xl font-bold text-primary">لماذا تختار أمانك أونلاين؟</h2>
           <p className="mt-4 text-lg text-foreground/80 max-w-2xl mx-auto">
             نحن نسعى لتقديم تجربة تأمين فريدة تجمع بين الحماية الموثوقة والخدمة الاستثنائية.
@@ -53,8 +53,12 @@ export default function WhyChooseUsSection() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {whyChooseUsData.map((item) => (
-            <Card key={item.id} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+          {whyChooseUsData.map((item, index) => (
+            <Card 
+              key={item.id} 
+              className="shadow-lg hover:shadow-xl transition-shadow duration-300 animate-fade-in-up opacity-0"
+              style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+            >
               <CardHeader className="items-center text-center">
                 <div className="p-3 bg-primary/10 rounded-full mb-4">
                   <item.icon className="h-10 w-10 text-primary" />
