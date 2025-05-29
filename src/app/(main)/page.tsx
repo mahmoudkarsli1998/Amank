@@ -1,5 +1,5 @@
 import HeroSection from '@/components/sections/HeroSection';
-import InsuranceCalculatorForm from '@/components/insurance-calculator-form';
+import InsuranceForms from '@/components/insurance-forms';
 import InsuranceTypesSection from '@/components/sections/InsuranceTypesSection';
 import WhyChooseUsSection from '@/components/sections/WhyChooseUsSection';
 import FAQSection from '@/components/sections/FAQSection';
@@ -11,7 +11,7 @@ export default function HomePage() {
       <HeroSection />
       <section id="calculator-section" className="py-16 md:py-24">
         <div className="container">
-          <InsuranceCalculatorForm />
+          <InsuranceForms />
         </div>
       </section>
       <InsuranceTypesSection />

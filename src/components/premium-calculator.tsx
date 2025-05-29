@@ -14,8 +14,8 @@ import { cn } from '@/lib/utils';
 import { Check, ChevronsUpDown, Calculator, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Import the car data
-import carBrandsData from '@/data/car_brands_list.json'; 
-import carModelsData from '@/data/car_models_arabic.json';
+import carBrandsData from '@/../car_brands_list.json'; 
+import carModelsData from '@/../car_models_arabic.json';
 
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 31 }, (_, i) => (currentYear - i).toString());
@@ -65,6 +65,16 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
     form.setValue('model', '');
   }, [selectedBrand, form]);
 
+  // const calculatePremium = (data: FormData): string => {
+  //   console.log("Calculating premium with data:", data);
+  //   const marketValue = Number(data.marketValue);
+  //   let basePremium = marketValue * 0.0188; 
+  //   const vehicleAge = currentYear - parseInt(data.yearOfManufacture);
+  //   if (vehicleAge <= 5) basePremium *= 1.2;
+  //   else if (vehicleAge <= 10) basePremium *= 1.0;
+  //   else basePremium *= 0.9;
+  //   return `${Math.round(basePremium)} جنيه مصري / سنة`;
+  // };
   const calculatePremium = (data: FormData): string => {
     console.log("Calculating premium with data:", data);
     
@@ -165,15 +175,15 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
                         <CommandList>
                           <CommandEmpty>لم يتم العثور على الماركة.</CommandEmpty>
                           <CommandGroup>
-                            {(carBrandsData as string[]).map((brand) => (
+                            {carBrandsData.map((brand) => (
                               <CommandItem
                                 className="hover:bg-white/10 dark:hover:bg-white/5 data-[selected=true]:bg-primary/80 data-[selected=true]:text-primary-foreground"
-                                value={brand}
-                                key={brand}
-                                onSelect={() => form.setValue("brand", brand)}
+                                value={brand.value}
+                                key={brand.value}
+                                onSelect={() => form.setValue("brand", brand.value)}
                               >
-                                <Check className={cn("mr-2 h-4 w-4", brand === field.value ? "opacity-100" : "opacity-0")} />
-                                {brand}
+                                <Check className={cn("mr-2 h-4 w-4", brand.value === field.value ? "opacity-100" : "opacity-0")} />
+                                {brand.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>

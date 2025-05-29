@@ -1,4 +1,3 @@
-
 import type { ScoreLeadInput, ScoreLeadOutput } from "@/ai/flows/lead-scoring";
 import type { LucideIcon } from "lucide-react";
 
@@ -11,7 +10,24 @@ export interface LeadData extends ScoreLeadInput {
   message?: string;
 }
 
-export interface ScoredLead extends LeadData, ScoreLeadOutput {}
+export interface ScoredLead {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  carCategory: string;
+  carMake: string;
+  carModel: string;
+  yearOfManufacture: number;
+  driverAge: number;
+  region: string;
+  message?: string;
+  leadScore: number;
+  reason: string;
+  submissionDate: string;
+  calculatorInteraction?: boolean;
+  websiteVisits?: number;
+}
 
 export type InsuranceType = {
   id: string;
@@ -44,3 +60,7 @@ export interface FAQItem {
 export type WhyChooseUsItemWithIcon = Omit<WhyChooseUsItem, 'iconName'> & {
   icon: LucideIcon;
 };
+
+export interface LeadCaptureFormProps {
+  onLeadScored?: (lead: ScoredLead) => void;
+}
