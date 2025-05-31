@@ -1,11 +1,9 @@
-
-
 "use client";
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -16,7 +14,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import { geographicRegions } from '@/lib/constants';
-import { UserPlus, Send, Check, ChevronsUpDown } from 'lucide-react';
+import { UserPlus, Send, Check, ChevronsUpDown, Shield } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
@@ -25,16 +23,12 @@ import carBrandsData from '@/../car_brands_list.json';
 const currentYear = new Date().getFullYear();
 
 // Function to extract car brands from JSON data
-// This handles different possible JSON structures
 const getCarBrands = (): string[] => {
   try {
-    // Handle different possible JSON structures
     if (Array.isArray(carBrandsData)) {
-      // If it's an array of strings
       if (typeof carBrandsData[0] === 'string') {
         return carBrandsData as unknown as string[];
       }
-      // If it's an array of objects with name/brand property
       if (typeof carBrandsData[0] === 'object') {
         const brands = carBrandsData.map((item: any) => 
           item.name || item.brand || item.make || item.manufacturer || Object.values(item)[0]
@@ -42,7 +36,6 @@ const getCarBrands = (): string[] => {
         return brands;
       }
     }
-    // If it's an object with brands as values
     if (typeof carBrandsData === 'object' && !Array.isArray(carBrandsData) && carBrandsData !== null) {
       const values = Object.values(carBrandsData as Record<string, any>);
       const flatValues = values.flat();
@@ -76,6 +69,7 @@ export type LeadFormValues = z.infer<typeof leadSchema>;
 export default function LeadCaptureForm() {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{name: string, price: string, firestoreDocId?: string} | null>(null);
   
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadSchema),
@@ -90,26 +84,64 @@ export default function LeadCaptureForm() {
     }
   });
 
+  // Check for selected plan in localStorage when component mounts
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedPlan = localStorage.getItem('selectedPlan');
+      if (storedPlan) {
+        try {
+          const planData = JSON.parse(storedPlan);
+          setSelectedPlan(planData);
+        } catch (error) {
+          console.error('Error parsing stored plan data:', error);
+        }
+      }
+    }
+  }, []);
+
   const n8nWebhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
 
   const processSubmit: SubmitHandler<LeadFormValues> = async (data) => {
     form.clearErrors();
     try {
-      // 1. حفظ البيانات في Firestore
-      const docRef = await addDoc(collection(db, "leads"), {
+      // Prepare the data to save, including selected plan if available
+      const leadData = {
         ...data,
+        // Add plan name directly to the leads collection
+        planName: selectedPlan?.name || null,
+        planPrice: selectedPlan?.price || null,
+        selectedPlan: selectedPlan ? {
+          planName: selectedPlan.name,
+          planPrice: selectedPlan.price,
+          planSelectionDocId: selectedPlan.firestoreDocId
+        } : null,
         submittedAt: serverTimestamp(),
-      });
+        // You can add user identification here if available
+        // userId: currentUser?.uid, // if you have user authentication
+        // userEmail: currentUser?.email,
+      };
+
+      // 1. Save lead data to Firestore
+      const docRef = await addDoc(collection(db, "leads"), leadData);
       console.log('Lead data submitted to Firestore with ID: ', docRef.id);
 
       toast({
         title: 'تم إرسال الاستفسار بنجاح!',
-        description: 'شكرًا لاهتمامك. سنتواصل معك قريبًا لمناقشة عرض السعر.',
+        description: selectedPlan 
+          ? `شكرًا لاهتمامك بخطة "${selectedPlan.name}". سنتواصل معك قريبًا لمناقشة عرض السعر.`
+          : 'شكرًا لاهتمامك. سنتواصل معك قريبًا لمناقشة عرض السعر.',
         variant: 'default',
       });
+      
       form.reset();
+      
+      // Clear the selected plan from localStorage after successful submission
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('selectedPlan');
+        setSelectedPlan(null);
+      }
 
-      // 2. إرسال البيانات إلى n8n Webhook (إذا كان الرابط معرفًا)
+      // 2. Send data to n8n Webhook (if URL is defined)
       if (n8nWebhookUrl && n8nWebhookUrl !== "YOUR_N8N_WEBHOOK_URL_HERE") {
         try {
           const response = await fetch(n8nWebhookUrl, {
@@ -117,7 +149,7 @@ export default function LeadCaptureForm() {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ ...data, firestoreDocId: docRef.id }),
+            body: JSON.stringify({ ...leadData, firestoreDocId: docRef.id }),
           });
 
           if (response.ok) {
@@ -159,7 +191,18 @@ export default function LeadCaptureForm() {
           <UserPlus className="h-7 w-7 text-primary" />
           احصل على عرض سعر شخصي
         </CardTitle>
-        <CardDescription>املأ النموذج أدناه وسيقوم خبيرنا بالاتصال بك لتقديم أفضل عرض سعر لتأمين سيارتك.</CardDescription>
+        <CardDescription>
+          {selectedPlan ? (
+            <div className="flex items-center gap-2 mt-2 p-3 bg-primary/10 rounded-lg">
+              <Shield className="h-4 w-4 text-primary" />
+              <span className="text-sm">
+                الخطة المختارة: <strong>{selectedPlan.name}</strong> - {selectedPlan.price}
+              </span>
+            </div>
+          ) : (
+            'املأ النموذج أدناه وسيقوم خبيرنا بالاتصال بك لتقديم أفضل عرض سعر لتأمين سيارتك.'
+          )}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>

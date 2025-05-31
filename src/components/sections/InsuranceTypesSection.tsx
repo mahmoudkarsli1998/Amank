@@ -1,3 +1,4 @@
+"use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -5,8 +6,77 @@ import { Button } from '@/components/ui/button';
 import { insurancePlans, type InsurancePlan } from '@/lib/constants';
 import { CheckCircle, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function InsurancePlanTable() {
+  const { toast } = useToast();
+
+  const handlePlanSelection = async (selectedPlan: InsurancePlan) => {
+    try {
+      // Save the plan selection to Firebase
+      const docRef = await addDoc(collection(db, "planSelections"), {
+        planName: selectedPlan.name,
+        planPrice: selectedPlan.price,
+        planFeatures: selectedPlan.features,
+        planIdealFor: selectedPlan.idealFor,
+        selectedAt: serverTimestamp(),
+        // You can add user identification here if available
+        // userId: currentUser?.uid, // if you have user authentication
+        // userEmail: currentUser?.email,
+      });
+
+      console.log('Plan selection saved to Firebase with ID: ', docRef.id);
+
+      toast({
+        title: 'تم اختيار الخطة بنجاح!',
+        description: `تم حفظ اختيارك لخطة "${selectedPlan.name}". سيتم توجيهك الآن لملء بيانات عرض السعر.`,
+        variant: 'default',
+      });
+
+      // Store the selected plan in localStorage for use in the quote form
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('selectedPlan', JSON.stringify({
+          name: selectedPlan.name,
+          price: selectedPlan.price,
+          features: selectedPlan.features,
+          idealFor: selectedPlan.idealFor,
+          firestoreDocId: docRef.id
+        }));
+      }
+
+      // Navigate to the quote form after a short delay
+      setTimeout(() => {
+        const quoteSection = document.getElementById('get-quote');
+        if (quoteSection) {
+          quoteSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          // If the element doesn't exist, try to navigate using window.location
+          window.location.hash = '#get-quote';
+        }
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error saving plan selection to Firebase:', error);
+      toast({
+        title: 'خطأ في حفظ الاختيار',
+        description: 'حدث خطأ أثناء حفظ اختيارك. سيتم توجيهك للنموذج مباشرة.',
+        variant: 'destructive',
+      });
+      
+      // Even if Firebase fails, still navigate to the form
+      setTimeout(() => {
+        const quoteSection = document.getElementById('get-quote');
+        if (quoteSection) {
+          quoteSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.location.hash = '#get-quote';
+        }
+      }, 1000);
+    }
+  };
+
   return (
     <Card className="shadow-xl">
       <CardHeader>
@@ -45,8 +115,12 @@ export default function InsurancePlanTable() {
                   </TableCell>
                   <TableCell className="text-right font-medium">{plan.price}</TableCell>
                   <TableCell className="text-center">
-                    <Button asChild variant="default" size="sm">
-                      <Link href="/#get-quote">اختر الخطة</Link>
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => handlePlanSelection(plan)}
+                    >
+                      اختر الخطة
                     </Button>
                   </TableCell>
                 </TableRow>
