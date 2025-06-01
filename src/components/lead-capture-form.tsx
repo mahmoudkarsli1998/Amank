@@ -187,15 +187,15 @@ export default function LeadCaptureForm() {
   return (
     <Card className="w-full max-w-lg shadow-xl">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-2xl">
-          <UserPlus className="h-7 w-7 text-primary" />
+        <CardTitle className="flex items-center gap-2 text-2xl font-semibold leading-tight tracking-[-0.025em]">
+          <UserPlus className="h-7 w-7 text-violet-400" />
           احصل على عرض سعر شخصي
         </CardTitle>
         <CardDescription>
           {selectedPlan ? (
-            <div className="flex items-center gap-2 mt-2 p-3 bg-primary/10 rounded-lg">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-sm">
+            <div className="flex items-center gap-2 mt-2 p-3 bg-blue-500/20/20/10 rounded-lg">
+              <Shield className="h-4 w-4 text-violet-400" />
+              <span className="text-sm font-normal leading-relaxed">
                 الخطة المختارة: <strong>{selectedPlan.name}</strong> - {selectedPlan.price}
               </span>
             </div>
@@ -260,7 +260,7 @@ export default function LeadCaptureForm() {
                           aria-expanded={open}
                           className={cn(
                             "outline w-full justify-between",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-slate-300-foreground"
                           )}
                         >
                           {field.value
@@ -356,7 +356,7 @@ export default function LeadCaptureForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={form.formState.isSubmitting}>
+            <Button type="submit" className="w-full bg-indigo-500/20/15 hover:bg-indigo-500/30/15/90 text-violet-400-foreground" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? 'لحظات من فضلك، جارٍ الإرسال...' : (
                 <>
                   <Send className="mr-2 h-4 w-4" /> إرسال طلب عرض السعر

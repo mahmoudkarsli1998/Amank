@@ -80,8 +80,8 @@ export default function InsurancePlanTable() {
   return (
     <Card className="shadow-xl">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-3xl">
-          <ShieldAlert className="h-8 w-8 text-primary" />
+        <CardTitle className="flex items-center gap-2 text-3xl font-bold leading-tight tracking-[-0.03em]">
+          <ShieldAlert className="h-8 w-8 text-violet-400" />
           خطط التأمين لدينا
         </CardTitle>
         <CardDescription>جد التغطية المثالية لاحتياجاتك. قارن بين خططنا أدناه.</CardDescription>
@@ -91,23 +91,23 @@ export default function InsurancePlanTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px] text-lg">اسم الخطة</TableHead>
-                <TableHead className="text-lg">مثالية لـ</TableHead>
-                <TableHead className="text-lg">الميزات الرئيسية</TableHead>
-                <TableHead className="text-right text-lg">السعر</TableHead>
-                <TableHead className="text-center text-lg">الإجراء</TableHead>
+                <TableHead className="w-[200px] text-lg font-medium leading-relaxed tracking-[-0.01em]">اسم الخطة</TableHead>
+                <TableHead className="text-lg font-medium leading-relaxed tracking-[-0.01em]">مثالية لـ</TableHead>
+                <TableHead className="text-lg font-medium leading-relaxed tracking-[-0.01em]">الميزات الرئيسية</TableHead>
+                <TableHead className="text-right text-lg font-medium leading-relaxed tracking-[-0.01em]">السعر</TableHead>
+                <TableHead className="text-center text-lg font-medium leading-relaxed tracking-[-0.01em]">الإجراء</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {insurancePlans.map((plan: InsurancePlan) => (
-                <TableRow key={plan.name} className="hover:bg-muted/50">
-                  <TableCell className="font-semibold text-md text-primary">{plan.name}</TableCell>
-                  <TableCell className="text-sm">{plan.idealFor}</TableCell>
+                <TableRow key={plan.name} className="hover:bg-slate-800/20/30/50">
+                  <TableCell className="font-semibold text-md text-violet-400">{plan.name}</TableCell>
+                  <TableCell className="text-sm font-normal leading-relaxed">{plan.idealFor}</TableCell>
                   <TableCell>
                     <ul className="list-none space-y-1">
                       {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2 text-sm">
-                          <CheckCircle className="h-4 w-4 text-green-500 shrink-0" />
+                        <li key={feature} className="flex items-center gap-2 text-sm font-normal leading-relaxed">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
                           {feature}
                         </li>
                       ))}

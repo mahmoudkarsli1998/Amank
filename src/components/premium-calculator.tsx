@@ -133,11 +133,11 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
   return (
     <div className="w-full max-w-lg rounded-2xl border border-white/20 bg-white/10 dark:bg-black/10 p-6 shadow-xl backdrop-blur-xl">
       <div className="mb-6">
-        <h2 className="flex items-center gap-3 text-2xl font-semibold tracking-tight text-foreground">
-          <Calculator className="h-7 w-7 text-primary" />
+        <h2 className="flex items-center gap-3 text-2xl font-semibold leading-tight tracking-[-0.025em] font-semibold tracking-tight text-slate-100">
+          <Calculator className="h-7 w-7 text-violet-400" />
           قارن أفضل عروض التأمين لسيارتك
         </h2>
-        <p className="text-sm text-muted-foreground mt-1.5">أدخل بيانات سيارتك للمقارنة واختيار أنسب عرض</p>
+        <p className="text-sm font-normal leading-relaxed text-slate-300-foreground mt-1.5">أدخل بيانات سيارتك للمقارنة واختيار أنسب عرض</p>
       </div>
       
       <div>
@@ -150,7 +150,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
               name="brand"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-sm font-medium text-foreground/80">الماركة*</FormLabel>
+                  <FormLabel className="text-sm font-normal leading-relaxed font-medium text-slate-100/80">الماركة*</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -159,7 +159,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
                           role="combobox"
                           className={cn(
                             "w-full justify-between rounded-lg border-white/30 bg-white/20 dark:border-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-slate-300-foreground"
                           )}
                         >
                           {field.value || "اختر الماركة"}
@@ -177,7 +177,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
                           <CommandGroup>
                             {carBrandsData.map((brand) => (
                               <CommandItem
-                                className="hover:bg-white/10 dark:hover:bg-white/5 data-[selected=true]:bg-primary/80 data-[selected=true]:text-primary-foreground"
+                                className="hover:bg-white/10 dark:hover:bg-white/5 data-[selected=true]:bg-blue-500/20/20/80 data-[selected=true]:text-violet-400-foreground"
                                 value={brand.value}
                                 key={brand.value}
                                 onSelect={() => form.setValue("brand", brand.value)}
@@ -202,7 +202,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
               name="model"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-sm font-medium text-foreground/80">الموديل*</FormLabel>
+                  <FormLabel className="text-sm font-normal leading-relaxed font-medium text-slate-100/80">الموديل*</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -212,7 +212,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
                           disabled={!selectedBrand || availableModels.length === 0}
                           className={cn(
                             "w-full justify-between rounded-lg border-white/30 bg-white/20 dark:border-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-slate-300-foreground"
                           )}
                         >
                           {field.value || "اختر الموديل"}
@@ -230,7 +230,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
                           <CommandGroup>
                             {availableModels.map((model) => (
                               <CommandItem
-                                className="hover:bg-white/10 dark:hover:bg-white/5 data-[selected=true]:bg-primary/80 data-[selected=true]:text-primary-foreground"
+                                className="hover:bg-white/10 dark:hover:bg-white/5 data-[selected=true]:bg-blue-500/20/20/80 data-[selected=true]:text-violet-400-foreground"
                                 value={model}
                                 key={model}
                                 onSelect={() => form.setValue("model", model)}
@@ -255,7 +255,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
               name="yearOfManufacture"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-sm font-medium text-foreground/80">سنة الصنع*</FormLabel>
+                  <FormLabel className="text-sm font-normal leading-relaxed font-medium text-slate-100/80">سنة الصنع*</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -264,7 +264,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
                           role="combobox"
                           className={cn(
                             "w-full justify-between rounded-lg border-white/30 bg-white/20 dark:border-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-slate-300-foreground"
                           )}
                         >
                           {field.value || "اختر سنة الصنع"}
@@ -282,7 +282,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
                           <CommandGroup>
                             {years.map((year) => (
                               <CommandItem
-                                className="hover:bg-white/10 dark:hover:bg-white/5 data-[selected=true]:bg-primary/80 data-[selected=true]:text-primary-foreground"
+                                className="hover:bg-white/10 dark:hover:bg-white/5 data-[selected=true]:bg-blue-500/20/20/80 data-[selected=true]:text-violet-400-foreground"
                                 value={year}
                                 key={year}
                                 onSelect={() => form.setValue("yearOfManufacture", year)}
@@ -307,16 +307,16 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
               name="marketValue"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-medium text-foreground/80">القيمة السوقية للسيارة*</FormLabel>
+                  <FormLabel className="text-sm font-normal leading-relaxed font-medium text-slate-100/80">القيمة السوقية للسيارة*</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
                       placeholder="مثال: 85000" 
-                      className="rounded-lg border-white/30 bg-white/20 dark:border-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10 focus-visible:ring-primary/80 focus-visible:ring-offset-0 focus-visible:ring-2"
+                      className="rounded-lg border-white/30 bg-white/20 dark:border-white/20 dark:bg-white/5 hover:bg-white/30 dark:hover:bg-white/10 focus-visible:ring-blue-400/50/80 focus-visible:ring-offset-0 focus-visible:ring-2"
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription className="text-xs text-foreground/60">
+                  <FormDescription className="text-xs font-medium tracking-wide text-slate-100/60">
                     أدخل القيمة التقديرية الحالية لسيارتك بالجنيه المصري.
                   </FormDescription>
                   <FormMessage />
@@ -326,7 +326,7 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
 
             <Button 
               type="submit" 
-              className="w-full rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+              className="w-full rounded-lg bg-blue-500/20/20 text-violet-400-foreground hover:bg-blue-500/20/20/90 transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg"
               disabled={isCalculating}
             >
               {isCalculating ? 'جارٍ الحساب...' : 'احسب القسط'}
@@ -335,23 +335,23 @@ export default function PremiumCalculator({}: PremiumCalculatorProps) {
         </Form>
         
         {calculationError && (
-          <div className="mt-6 p-4 rounded-lg border border-red-500/30 bg-red-500/10 text-center backdrop-blur-sm">
-            <div className="flex items-center justify-center gap-2 text-destructive mb-2">
+          <div className="mt-6 p-4 rounded-lg border border-red-500/30 bg-red-500/20/10 text-center backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 text-rose-400 mb-2">
               <AlertCircle className="h-5 w-5" />
               <p className="font-medium">خطأ في الحساب</p>
             </div>
-            <p className="text-sm text-destructive/90">{calculationError}</p>
+            <p className="text-sm font-normal leading-relaxed text-rose-400/90">{calculationError}</p>
           </div>
         )}
         
         {estimatedPremium && !isCalculating && !calculationError && (
-          <div className="mt-6 p-4 rounded-lg border border-primary/30 bg-primary/10 text-center backdrop-blur-sm">
-            <div className="flex items-center justify-center gap-2 text-primary mb-2">
+          <div className="mt-6 p-4 rounded-lg border border-blue-400/30/30 bg-blue-500/20/20/10 text-center backdrop-blur-sm">
+            <div className="flex items-center justify-center gap-2 text-violet-400 mb-2">
               <CheckCircle className="h-5 w-5" />
               <p className="font-medium">القسط التقديري:</p>
             </div>
-            <p className="text-2xl font-bold text-primary">{estimatedPremium}</p>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-2xl font-semibold leading-tight tracking-[-0.025em] font-bold text-violet-400">{estimatedPremium}</p>
+            <p className="text-xs font-medium tracking-wide text-slate-300-foreground mt-2">
               * هذا تقدير أولي، القسط النهائي قد يختلف.
             </p>
           </div>

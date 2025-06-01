@@ -84,8 +84,8 @@
 //       return (
 //         <div className="flex flex-col justify-center items-center h-[calc(100vh-10rem)]">
 //           <Card className="p-8 shadow-xl text-center">
-//             <CardTitle className="text-xl text-primary">جاري تحميل العملاء المحتملين...</CardTitle>
-//             <Loader2 className="mx-auto mt-4 h-12 w-12 animate-spin text-primary" />
+//             <CardTitle className="text-xl font-semibold leading-tight tracking-[-0.02em] text-violet-400">جاري تحميل العملاء المحتملين...</CardTitle>
+//             <Loader2 className="mx-auto mt-4 h-12 w-12 animate-spin text-violet-400" />
 //           </Card>
 //         </div>
 //       );
@@ -94,8 +94,8 @@
 //   return (
 //     <div className="space-y-8">
 //       <div>
-//         <h1 className="text-3xl font-bold text-primary">إدارة العملاء المحتملين</h1>
-//         <p className="text-muted-foreground">
+//         <h1 className="text-3xl font-bold leading-tight tracking-[-0.03em] font-bold text-violet-400">إدارة العملاء المحتملين</h1>
+//         <p className="text-slate-300-foreground">
 //           أضف عملاء جدد يدويًا لتقييمهم بواسطة الذكاء الاصطناعي أو استعرض العملاء الحاليين من قاعدة البيانات.
 //         </p>
 //       </div>
@@ -112,12 +112,12 @@
 //         <CardContent>
 //           {isLoadingLeads && scoredLeads.length > 0 && ( // Show subtle loader if updating
 //              <div className="text-center py-4">
-//                 <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary/70" />
-//                 <p className="text-sm text-muted-foreground">تحديث القائمة...</p>
+//                 <Loader2 className="mx-auto h-6 w-6 animate-spin text-violet-400/70" />
+//                 <p className="text-sm font-normal leading-relaxed text-slate-300-foreground">تحديث القائمة...</p>
 //             </div>
 //           )}
 //           {scoredLeads.length === 0 && !isLoadingLeads ? (
-//             <p className="text-center text-muted-foreground py-8">لا يوجد عملاء محتملون لعرضهم حتى الآن. قم بإضافة عميل جديد.</p>
+//             <p className="text-center text-slate-300-foreground py-8">لا يوجد عملاء محتملون لعرضهم حتى الآن. قم بإضافة عميل جديد.</p>
 //           ) : (
 //             <div className="overflow-x-auto">
 //               <Table>

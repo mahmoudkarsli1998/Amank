@@ -123,8 +123,8 @@ export default function AdminContentPage() {
   if (isFetching) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="ml-4 text-lg">جاري تحميل المحتوى...</p>
+        <Loader2 className="h-12 w-12 animate-spin text-violet-400" />
+        <p className="ml-4 text-lg font-medium leading-relaxed tracking-[-0.01em]">جاري تحميل المحتوى...</p>
       </div>
     );
   }
@@ -132,8 +132,8 @@ export default function AdminContentPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-primary">إدارة محتوى الموقع</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold leading-tight tracking-[-0.03em] font-bold text-violet-400">إدارة محتوى الموقع</h1>
+        <p className="text-slate-300-foreground">
           قم بتحديث النصوص والمعلومات المعروضة في الصفحات الرئيسية للموقع من هنا.
         </p>
       </div>
@@ -160,8 +160,8 @@ export default function AdminContentPage() {
           {whyUsItems.map((item, index) => (
             <div key={item.id} className="p-4 border rounded-md space-y-3">
               <div className="flex justify-between items-center">
-                <Label className="text-base font-semibold">الميزة {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => removeWhyUsItem(index)} className="text-destructive hover:text-destructive/80">
+                <Label className="text-base font-normal leading-relaxed tracking-[0.01em] font-semibold">الميزة {index + 1}</Label>
+                <Button variant="ghost" size="icon" onClick={() => removeWhyUsItem(index)} className="text-rose-400 hover:text-rose-400 transition-colors duration-200/80">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -183,8 +183,8 @@ export default function AdminContentPage() {
           {faqItems.map((item, index) => (
             <div key={item.id} className="p-4 border rounded-md space-y-3">
                <div className="flex justify-between items-center">
-                 <Label className="text-base font-semibold">السؤال {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => removeFaqItem(index)} className="text-destructive hover:text-destructive/80">
+                 <Label className="text-base font-normal leading-relaxed tracking-[0.01em] font-semibold">السؤال {index + 1}</Label>
+                <Button variant="ghost" size="icon" onClick={() => removeFaqItem(index)} className="text-rose-400 hover:text-rose-400 transition-colors duration-200/80">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -205,8 +205,8 @@ export default function AdminContentPage() {
           {insuranceTypes.map((item, index) => (
             <div key={item.id} className="p-4 border rounded-md space-y-3">
                <div className="flex justify-between items-center">
-                 <Label className="text-base font-semibold">نوع التأمين {index + 1}</Label>
-                <Button variant="ghost" size="icon" onClick={() => removeInsuranceType(index)} className="text-destructive hover:text-destructive/80">
+                 <Label className="text-base font-normal leading-relaxed tracking-[0.01em] font-semibold">نوع التأمين {index + 1}</Label>
+                <Button variant="ghost" size="icon" onClick={() => removeInsuranceType(index)} className="text-rose-400 hover:text-rose-400 transition-colors duration-200/80">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
@@ -223,7 +223,7 @@ export default function AdminContentPage() {
       </Card>
 
       <div className="flex justify-end pt-4">
-        <Button onClick={handleSaveChanges} disabled={isLoading || isFetching} size="lg" className="bg-secondary hover:bg-secondary/90 text-secondary-foreground">
+        <Button onClick={handleSaveChanges} disabled={isLoading || isFetching} size="lg" className="bg-amber-500/20 hover:bg-amber-500/20/90 text-amber-400-foreground">
           {(isLoading || isFetching) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {(isLoading || isFetching) ? "جاري العمل..." : "حفظ جميع التغييرات"}
         </Button>

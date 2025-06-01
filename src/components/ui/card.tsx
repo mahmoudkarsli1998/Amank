@@ -8,14 +8,19 @@ const Card = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
+    // Apply glass-card class here, removing conflicting Tailwind classes
+    // Keep text-slate-50 for now, may need adjustment later
     className={cn(
-      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      "glass-card text-slate-50", // Replaced border, bg-white/5, shadow-sm, rounded-lg with glass-card
       className
     )}
     {...props}
   />
 ))
 Card.displayName = "Card"
+
+// CardHeader, CardTitle, CardDescription, CardContent, CardFooter remain unchanged
+// as they handle internal padding and typography, not the card's outer shell.
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
@@ -30,13 +35,13 @@ const CardHeader = React.forwardRef<
 CardHeader.displayName = "CardHeader"
 
 const CardTitle = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLParagraphElement, // Changed from HTMLDivElement based on typical usage
+  React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <h3 // Changed from div to h3 for semantic correctness
     ref={ref}
     className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
+      "text-2xl font-semibold leading-tight tracking-[-0.025em] font-semibold leading-none tracking-tight",
       className
     )}
     {...props}
@@ -45,12 +50,12 @@ const CardTitle = React.forwardRef<
 CardTitle.displayName = "CardTitle"
 
 const CardDescription = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLParagraphElement, // Changed from HTMLDivElement based on typical usage
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <p // Changed from div to p for semantic correctness
     ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
+    className={cn("text-sm font-normal leading-relaxed text-slate-300-foreground", className)}
     {...props}
   />
 ))

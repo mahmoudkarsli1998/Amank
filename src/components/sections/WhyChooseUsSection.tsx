@@ -57,7 +57,7 @@ export default function WhyChooseUsSection() {
 
   if (isLoading) {
     return (
-      <section className="py-16 md:py-24 bg-muted/30">
+      <section className="py-16 md:py-24 bg-slate-800/20/30/30">
         <div className="container">
           <div className="text-center mb-12">
             <Skeleton className="h-10 w-1/2 mx-auto" />
@@ -83,11 +83,11 @@ export default function WhyChooseUsSection() {
   }
 
   return (
-    <section className="py-16 md:py-24 bg-muted/30">
+    <section className="py-16 md:py-24 bg-slate-800/20/30/30">
       <div className="container">
         <div className="text-center mb-12 animate-fade-in-up opacity-0">
-          <h2 className="text-3xl md:text-4xl font-bold text-primary">لماذا تختار أمانك أونلاين؟</h2>
-          <p className="mt-4 text-lg text-foreground/80 max-w-2xl mx-auto">
+          <h2 className="text-3xl font-bold leading-tight tracking-[-0.03em] md:text-4xl font-bold leading-none tracking-[-0.035em] font-bold text-violet-400">لماذا تختار أمانك أونلاين؟</h2>
+          <p className="mt-4 text-lg font-medium leading-relaxed tracking-[-0.01em] text-slate-100/80 max-w-2xl mx-auto">
             نحن نسعى لتقديم تجربة تأمين فريدة تجمع بين الحماية الموثوقة والخدمة الاستثنائية.
           </p>
         </div>
@@ -102,13 +102,13 @@ export default function WhyChooseUsSection() {
                 style={{ animationDelay: `${0.2 + index * 0.1}s` }}
               >
                 <CardHeader className="items-center text-center">
-                  <div className="p-3 bg-primary/10 rounded-full mb-4">
-                    <IconComponent className="h-10 w-10 text-primary" />
+                  <div className="p-3 bg-blue-500/20/20/10 rounded-full mb-4">
+                    <IconComponent className="h-10 w-10 text-violet-400" />
                   </div>
-                  <CardTitle className="text-xl">{item.title}</CardTitle>
+                  <CardTitle className="text-xl font-semibold leading-tight tracking-[-0.02em]">{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <p className="text-foreground/70">{item.description}</p>
+                  <p className="text-slate-100/70">{item.description}</p>
                 </CardContent>
               </Card>
             );

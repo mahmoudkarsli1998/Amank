@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <SidebarHeader className="flex flex-col items-center p-4 border-b border-sidebar-border">
            <Link href="/" className="flex items-center gap-2 mb-4">
               <Car className="h-8 w-8 text-sidebar-primary" />
-              <span className="text-2xl font-bold text-sidebar-primary group-data-[collapsible=icon]:hidden">أمانك أونلاين</span>
+              <span className="text-2xl font-semibold leading-tight tracking-[-0.025em] font-bold text-sidebar-primary group-data-[collapsible=icon]:hidden">أمانك أونلاين</span>
            </Link>
         </SidebarHeader>
         <SidebarContent>
@@ -75,7 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background px-4 sm:px-6">
+        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-slate-900/20/10 px-4 sm:px-6">
             <div className="md:hidden">
                  <SidebarTrigger />
             </div>
@@ -101,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </DropdownMenuContent>
             </DropdownMenu>
         </header>
-        <main className="flex-1 p-6 bg-muted/40">
+        <main className="flex-1 p-6 bg-slate-800/20/30/40">
             {children}
         </main>
       </SidebarInset>

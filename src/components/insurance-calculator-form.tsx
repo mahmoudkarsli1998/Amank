@@ -152,10 +152,10 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
     return (
       <Card className="w-full max-w-2xl mx-auto shadow-xl">
         <CardHeader>
-          <CardTitle className="text-2xl text-center text-primary">جاري تحميل الآلة الحاسبة...</CardTitle>
+          <CardTitle className="text-2xl font-semibold leading-tight tracking-[-0.025em] text-center text-violet-400">جاري تحميل الآلة الحاسبة...</CardTitle>
         </CardHeader>
         <CardContent className="p-6 text-center">
-           <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary" />
+           <Loader2 className="mx-auto h-12 w-12 animate-spin text-violet-400" />
         </CardContent>
       </Card>
     );
@@ -164,7 +164,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
   return (
     <Card id="calculator" className="w-full max-w-2xl mx-auto shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl text-center text-primary">احسب قسط تأمينك واحصل على عرض</CardTitle>
+        <CardTitle className="text-3xl font-bold leading-tight tracking-[-0.03em] text-center text-violet-400">احسب قسط تأمينك واحصل على عرض</CardTitle>
         <CardDescription className="text-center">
           أدخل بيانات سيارتك وبياناتك الشخصية للحصول على عرض تأمين مخصص وتقييم فوري لمدى اهتمامك.
         </CardDescription>
@@ -187,7 +187,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
                   </Select>
                 )}
               />
-              {form.formState.errors.carType && <p className="text-sm text-destructive">{form.formState.errors.carType.message}</p>}
+              {form.formState.errors.carType && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.carType.message}</p>}
             </div>
 
             {/* Year of Manufacture */}
@@ -205,7 +205,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
                   </Select>
                 )}
               />
-              {form.formState.errors.yearOfManufacture && <p className="text-sm text-destructive">{form.formState.errors.yearOfManufacture.message}</p>}
+              {form.formState.errors.yearOfManufacture && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.yearOfManufacture.message}</p>}
             </div>
 
             {/* Car Make */}
@@ -223,7 +223,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
                   </Select>
                 )}
               />
-              {form.formState.errors.carMake && <p className="text-sm text-destructive">{form.formState.errors.carMake.message}</p>}
+              {form.formState.errors.carMake && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.carMake.message}</p>}
             </div>
 
             {/* Car Model */}
@@ -246,14 +246,14 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
                   </Select>
                 )}
               />
-              {form.formState.errors.carModel && <p className="text-sm text-destructive">{form.formState.errors.carModel.message}</p>}
+              {form.formState.errors.carModel && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.carModel.message}</p>}
             </div>
 
             {/* Driver Age */}
             <div className="space-y-2">
               <Label htmlFor="driverAge">عمر السائق</Label>
               <Input id="driverAge" type="number" {...form.register("driverAge")} placeholder="مثال: 30" />
-              {form.formState.errors.driverAge && <p className="text-sm text-destructive">{form.formState.errors.driverAge.message}</p>}
+              {form.formState.errors.driverAge && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.driverAge.message}</p>}
             </div>
 
             {/* Region */}
@@ -271,7 +271,7 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
                   </Select>
                 )}
               />
-              {form.formState.errors.region && <p className="text-sm text-destructive">{form.formState.errors.region.message}</p>}
+              {form.formState.errors.region && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.region.message}</p>}
             </div>
           </div>
 
@@ -281,30 +281,30 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
           </Button>
 
           {calculatedPremium && (
-            <div className="mt-4 p-3 bg-primary/10 text-primary rounded-md text-center font-semibold">
+            <div className="mt-4 p-3 bg-blue-500/20/20/10 text-violet-400 rounded-md text-center font-semibold">
               {calculatedPremium}
             </div>
           )}
 
           <hr className="my-6" />
-          <p className="text-center font-semibold text-foreground/80">أدخل بياناتك لإرسال الطلب والحصول على تقييم:</p>
+          <p className="text-center font-semibold text-slate-100/80">أدخل بياناتك لإرسال الطلب والحصول على تقييم:</p>
 
           <div className="space-y-2">
             <Label htmlFor="name">الاسم بالكامل</Label>
             <Input id="name" {...form.register("name")} placeholder="مثال: محمد أحمد" />
-            {form.formState.errors.name && <p className="text-sm text-destructive">{form.formState.errors.name.message}</p>}
+            {form.formState.errors.name && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.name.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="phone">رقم الهاتف</Label>
             <Input id="phone" type="tel" {...form.register("phone")} placeholder="مثال: 01001234567" />
-            {form.formState.errors.phone && <p className="text-sm text-destructive">{form.formState.errors.phone.message}</p>}
+            {form.formState.errors.phone && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.phone.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="email">البريد الإلكتروني</Label>
             <Input id="email" type="email" {...form.register("email")} placeholder="مثال: example@mail.com" />
-            {form.formState.errors.email && <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>}
+            {form.formState.errors.email && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.email.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -315,12 +315,12 @@ export default function InsuranceCalculatorForm({ onLeadScored }: InsuranceCalcu
               placeholder="هل لديك أي ملاحظات أو استفسارات إضافية؟"
               rows={3}
             />
-            {form.formState.errors.message && <p className="text-sm text-destructive">{form.formState.errors.message.message}</p>}
+            {form.formState.errors.message && <p className="text-sm font-normal leading-relaxed text-rose-400">{form.formState.errors.message.message}</p>}
           </div>
 
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground" disabled={isLoading}>
+          <Button type="submit" className="w-full bg-amber-500/20 hover:bg-amber-500/20/90 text-amber-400-foreground" disabled={isLoading}>
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageSquareText className="mr-2 h-4 w-4" />}
             {isLoading ? 'جاري الإرسال...' : 'إرسال الطلب والحصول على تقييم'}
           </Button>
